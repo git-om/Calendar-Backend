@@ -12,6 +12,7 @@ const startServer = async () => {
 
     const server = new ApolloServer({
         schema,
+        introspection: true,  // Enable introspection
         context: ({ req }) => ({ req }),
     });
 

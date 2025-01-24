@@ -7,9 +7,8 @@ import { Request } from "express";
 
 interface MyContext {
     req: Request;
-    userId: string | null;
+    userId: string;
 }
-
 
 @Resolver()
 export default class UserResolver {
@@ -24,9 +23,8 @@ export default class UserResolver {
         const user = await prisma.user.create({
             data: { firstName, lastName, email, password: hashedPassword },
         });
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!);
+        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, { expiresIn: "7d" });
         return { token };
-
     }
 
     @Mutation(() => Token)
@@ -38,29 +36,34 @@ export default class UserResolver {
         if (!user) throw new Error("Invalid credentials");
         const valid = await bcrypt.compare(password, user.password);
         if (!valid) throw new Error("Invalid credentials");
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!);
+        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, { expiresIn: "7d" });
         return { token };
     }
 
     @Query(() => [User])
     async users() {
-        return prisma.user.findMany();
+        return prisma.user.findMany({
+            include: {
+                events: true,  // Ensure related events are included
+            },
+        });
     }
 
     @Query(() => User, { nullable: true })
-    async me(@Ctx() ctx: MyContext): Promise<User | null> {
+    async me(@Ctx() ctx: MyContext) {
         if (!ctx.userId) {
             throw new Error("Not authenticated");
         }
-
         const user = await prisma.user.findUnique({
             where: { id: ctx.userId },
+            include: {
+                events: true,  // Include events to match the expected return type
+            },
         });
-
         if (!user) {
             throw new Error("User not found");
         }
-
         return user;
     }
+
 }

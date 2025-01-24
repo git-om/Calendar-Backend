@@ -1,4 +1,5 @@
 import { ObjectType, Field, ID } from "type-graphql";
+import { Event } from "./Event";
 
 @ObjectType()
 export class User {
@@ -13,10 +14,13 @@ export class User {
 
   @Field()
   email!: string;
+
+  @Field(() => [Event], { nullable: true })
+  events?: Event[];
 }
 
 @ObjectType()
-export class Token{
-    @Field()
-    token: string;
+export class Token {
+  @Field()
+  token!: string;
 }

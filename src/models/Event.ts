@@ -2,25 +2,25 @@ import { ObjectType, Field, ID, GraphQLISODateTime} from "type-graphql";
 import { User } from "./User";
 
 @ObjectType()
-export class Event{
-    @Field(() => ID)
-    id!: string;
+export class Event {
+  @Field(() => ID)
+  id!: string;
 
-    @Field()
-    title!: string;
+  @Field()
+  title!: string;
 
-    @Field()
-    description?: string;
+  @Field({ nullable: true })
+  description?: string;
 
-    @Field(() => GraphQLISODateTime)
-    start!: string;
+  @Field(() => GraphQLISODateTime)
+  start!: Date;
 
-    @Field(() => GraphQLISODateTime)
-    end!: string;
+  @Field(() => GraphQLISODateTime)
+  end!: Date;
 
-    @Field()
-    user!: string;
+  @Field(() => User)
+  user!: User;
 
-    @Field()
-    userId!: string;
+  @Field()
+  userId!: string;
 }

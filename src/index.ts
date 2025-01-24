@@ -26,7 +26,7 @@ const startServer = async () => {
                 console.error("JWT verification failed:", err.message);
             }
         
-            return { userId: null, req };
+            // return { userId: null, req };
         },        
     });
 

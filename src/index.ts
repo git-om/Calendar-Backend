@@ -7,20 +7,22 @@ import "reflect-metadata";
 dotenv.config();
 
 const startServer = async () => {
-  const app:any = express();
-  const schema = await createSchema();
+    const app: any = express();
+    const schema = await createSchema();
 
-  const server = new ApolloServer({
-    schema,
-    context: ({ req }) => ({ req }),
-  });
+    const server = new ApolloServer({
+        schema,
+        context: ({ req }) => ({ req }),
+    });
 
-  await server.start();
-  server.applyMiddleware({ app });
+    await server.start();
+    server.applyMiddleware({ app });
 
-  app.listen(4000, () => {
-    console.log("Server running at http://localhost:4000/graphql");
-  });
+    const port = process.env.PORT || 4000;
+    app.listen(port, () => {
+        console.log(`Server running on port ${port}`);
+    });
+
 };
 
 startServer();

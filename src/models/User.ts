@@ -14,3 +14,9 @@ export class User {
   @Field()
   email!: string;
 }
+
+@ObjectType()
+export class Token{
+    @Field()
+    token: string;
+}

@@ -2,34 +2,37 @@ import { Resolver, Mutation, Arg, Query } from "type-graphql";
 import prisma from "../../config/db";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { User } from "../../models/User";
+import { Token, User } from "../../models/User";
 
 @Resolver()
 export default class UserResolver {
-  @Mutation(() => String)
+  @Mutation(() => Token)
   async signup(
     @Arg("firstName") firstName: string,
     @Arg("lastName") lastName: string,
     @Arg("email") email: string,
     @Arg("password") password: string
-  ): Promise<string> {
+  ): Promise<Token> {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
       data: { firstName, lastName, email, password: hashedPassword },
     });
-    return jwt.sign({ userId: user.id }, process.env.JWT_SECRET!);
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!);
+    return {token};
+
   }
 
-  @Mutation(() => String)
+  @Mutation(() => Token)
   async signin(
     @Arg("email") email: string,
     @Arg("password") password: string
-  ): Promise<string> {
+  ): Promise<Token> {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) throw new Error("Invalid credentials");
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) throw new Error("Invalid credentials");
-    return jwt.sign({ userId: user.id }, process.env.JWT_SECRET!);
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!);
+    return {token};
   }
 
   @Query(() => [User])

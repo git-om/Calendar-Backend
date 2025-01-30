@@ -9,11 +9,11 @@ export class DeleteEventResolver {
     async deleteEvent(
         @Arg("id") id: string,
         @Ctx() ctx: MyContext
-    ) {
+    ) { 
         if (!ctx.userId) {
             throw new Error("Not authenticated");
         }
-        if (await prisma.event.delete({ where: { id: id } })) {
+        if (await prisma.event.delete({ where: { id: id } })) { 
             return "Event deleted"
         }
         throw new Error("Unable to delete event")
